@@ -53,6 +53,23 @@
          <children>
             <HBox fx:id="onlineUsersHbox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="217.0" stylesheets="@../styles/ListViewStyle.css">
                <children>
+                  <Label fx:id="communityChannel" prefHeight="48.0" prefWidth="217.0" style="-fx-cursor: hand;" text="# Community" textAlignment="CENTER" textFill="#fc6747">
+                     <font>
+                        <Font name="SansSerif Regular" size="14.0" />
+                     </font>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                     <opaqueInsets>
+                        <Insets bottom="10.0" />
+                     </opaqueInsets>
+                  </Label>
+               </children>
+            </HBox>
+            <ListView fx:id="userList" focusTraversable="false" maxHeight="1.7976931348623157E308" prefHeight="498.0" prefWidth="217.0" style="-fx-border-image-width: 0;" stylesheets="@../styles/ListViewStyle.css">
+            </ListView>
+            <HBox fx:id="onlineUsersHbox1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="217.0" stylesheets="@../styles/ListViewStyle.css">
+               <children>
                   <Label prefHeight="50.0" prefWidth="124.0" text="Online Users:" textAlignment="CENTER" textFill="#fc6747">
                      <font>
                         <Font name="SansSerif Regular" size="14.0" />
@@ -74,8 +91,6 @@
                   </Label>
                </children>
             </HBox>
-            <ListView fx:id="userList" focusTraversable="false" maxHeight="1.7976931348623157E308" prefHeight="495.0" prefWidth="217.0" style="-fx-border-image-width: 0;" stylesheets="@../styles/ListViewStyle.css">
-            </ListView>
          </children>
       </VBox>
    </left>

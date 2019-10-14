@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class Server {
@@ -47,6 +46,7 @@ public class Server {
         private Socket socket;
         private Logger logger = LoggerFactory.getLogger(Handler.class);
         private User user;
+        private String channel;
         private ObjectInputStream input;
         private OutputStream os;
         private ObjectOutputStream output;
@@ -54,6 +54,7 @@ public class Server {
 
         public Handler(Socket socket) throws IOException {
             this.socket = socket;
+            this.channel = "Community";
         }
 
         public void run() {
@@ -73,19 +74,22 @@ public class Server {
                 while (socket.isConnected()) {
                     Message inputmsg = (Message) input.readObject();
                     if (inputmsg != null) {
-                        logger.info(inputmsg.getType() + " - " + inputmsg.getName() + " - " + inputmsg.getReceiver() + ": " + inputmsg.getMsg());
+                        logger.info(inputmsg.getType() + " - " + inputmsg.getName() + " - " + inputmsg.getChannel() + ": " + inputmsg.getMsg());
                         switch (inputmsg.getType()) {
                             case USER:
-                                write(inputmsg, inputmsg.getReceiver());
+                                write(inputmsg);
                                 break;
                             case VOICE:
-                                write(inputmsg, inputmsg.getReceiver());
+                                write(inputmsg);
                                 break;
                             case CONNECTED:
                                 addToList();
                                 break;
                             case STATUS:
                                 changeStatus(inputmsg);
+                                break;
+                            case CHANNEL:
+                                changeChannel(inputmsg);
                                 break;
                             default:
                                 logger.warn("Message ignored cause uncaught  UnknownType!");
@@ -112,8 +116,13 @@ public class Server {
             msg.setMsg("");
             User userObj = names.get(name);
             userObj.setStatus(inputmsg.getStatus());
-            write(msg, "Community");
+            write(msg);
             return msg;
+        }
+
+        private void changeChannel(Message inputmsg) throws  IOException {
+            logger.info(inputmsg.getName() + " has changed channel to  " + inputmsg.getChannel());
+            this.channel = inputmsg.getChannel();
         }
 
         private synchronized void checkDuplicateUsername(Message firstMessage) throws DuplicateUsernameException {
@@ -141,7 +150,7 @@ public class Server {
             msg.setType(MessageType.NOTIFICATION);
             msg.setName(firstMessage.getName());
             msg.setPicture(firstMessage.getPicture());
-            write(msg, "Community");
+            write(msg);
             return msg;
         }
 
@@ -153,7 +162,7 @@ public class Server {
             msg.setType(MessageType.DISCONNECTED);
             msg.setName("SERVER");
             msg.setUserlist(names);
-            write(msg, "Community");
+            write(msg);
             logger.debug("removeFromList() method Exit");
             return msg;
         }
@@ -166,16 +175,16 @@ public class Server {
             msg.setMsg("Welcome, You have now joined the server! Enjoy chatting!");
             msg.setType(MessageType.CONNECTED);
             msg.setName("SERVER");
-            write(msg, "Community");
+            write(msg);
             return msg;
         }
 
         /*
          * Creates and sends a Message type to the listeners.
          */
-        private void write(Message msg, String receiver) throws IOException {
+        private void write(Message msg) throws IOException {
             for (Map.Entry writer : writers.entrySet()) {
-                if (receiver.equals(writer.getKey().toString()) || receiver.equals("Community") || name.equals(writer.getKey().toString())) {
+                if (channel.equals(writer.getKey().toString()) || channel.equals("Community") || name.equals(writer.getKey().toString())) {
                     msg.setUserlist(names);
                     msg.setUsers(users);
                     msg.setOnlineCount(names.size());

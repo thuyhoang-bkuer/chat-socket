@@ -16,7 +16,6 @@ public class Listener implements Runnable{
 
     private static final String HASCONNECTED = "has connected";
 
-    public static String channel;
     private static String picture;
     private Socket socket;
     public String hostname;
@@ -30,7 +29,6 @@ public class Listener implements Runnable{
     Logger logger = LoggerFactory.getLogger(Listener.class);
 
     public Listener(String hostname, int port, String username, String picture, ChatController controller) {
-        Listener.channel = "Community";
         this.hostname = hostname;
         this.port = port;
         Listener.username = username;
@@ -92,6 +90,18 @@ public class Listener implements Runnable{
         }
     }
 
+    /*
+    *   This method is used for sending message update channel
+    *   @param msg -
+     */
+    public static void sendChannelUpadte(String channel) throws IOException {
+        Message createMessage = new Message();
+        createMessage.setName(username);
+        createMessage.setType(MessageType.CHANNEL);
+        createMessage.setChannel(channel);
+        oos.writeObject(createMessage);
+        oos.flush();
+    }
 
     /* This method is used for sending a normal Message
      * @param msg - The message which the user generates
@@ -103,7 +113,6 @@ public class Listener implements Runnable{
         createMessage.setStatus(Status.AWAY);
         createMessage.setMsg(msg);
         createMessage.setPicture(picture);
-        createMessage.setReceiver(channel);
         oos.writeObject(createMessage);
         oos.flush();
     }
@@ -118,7 +127,6 @@ public class Listener implements Runnable{
         createMessage.setStatus(Status.AWAY);
         createMessage.setVoiceMsg(audio);
         createMessage.setPicture(picture);
-        createMessage.setReceiver(channel);
         oos.writeObject(createMessage);
         oos.flush();
     }
@@ -143,7 +151,6 @@ public class Listener implements Runnable{
         createMessage.setType(CONNECTED);
         createMessage.setMsg(HASCONNECTED);
         createMessage.setPicture(picture);
-        createMessage.setReceiver(channel);
         oos.writeObject(createMessage);
     }
 

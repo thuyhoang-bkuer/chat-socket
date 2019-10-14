@@ -53,6 +53,7 @@ public class ChatController implements Initializable {
     @FXML private Label onlineCountLabel;
     @FXML private ListView userList;
     @FXML private ImageView userImageView;
+    @FXML private Label communityChannel;
     @FXML private Button recordBtn;
     @FXML ListView chatPane;
     @FXML ListView statusList;
@@ -174,6 +175,7 @@ public class ChatController implements Initializable {
     }
 
     public void setOnlineLabel(String usercount) {
+        logger.info("setOnlineLabel() - " + usercount);
         Platform.runLater(() -> onlineCountLabel.setText(usercount));
     }
 
@@ -181,9 +183,10 @@ public class ChatController implements Initializable {
         logger.info("setUserList() method Enter");
         Platform.runLater(() -> {
             ObservableList<User> users = FXCollections.observableList(msg.getUsers());
+            users.removeIf(user -> user.getName().equals(Listener.username));
             userList.setItems(users);
             userList.setCellFactory(new CellRenderer());
-            setOnlineLabel(String.valueOf(msg.getUserlist().size()));
+            setOnlineLabel(String.valueOf(msg.getUserlist().size() - 1));
         });
         logger.info("setUserList() method Exit");
     }
@@ -271,6 +274,15 @@ public class ChatController implements Initializable {
             borderPane.setCursor(Cursor.DEFAULT);
         });
 
+        communityChannel.setOnMouseClicked(event -> {
+            try {
+                Listener.sendChannelUpadte("Community");
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
         statusComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 try {
@@ -294,15 +306,21 @@ public class ChatController implements Initializable {
         });
 
 
-        /* Initialize user list*/
+        /* Initialize user user list */
         userList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         userList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
             @Override
             public void changed(ObservableValue<? extends  User> observableValue, User prev, User curr) {
-                logger.info("Open connection to " + curr.getName());
-                Listener.channel = curr.getName();
+                try {
+                    logger.info("Open connection to " + curr.getName());
+                    Listener.sendChannelUpadte(curr.getName());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
+
+
     }
 
     public void setImageLabel(String selectedPicture) {
@@ -318,6 +336,8 @@ public class ChatController implements Initializable {
                 break;
         }
     }
+
+
 
     public void logoutScene() {
         Platform.runLater(() -> {

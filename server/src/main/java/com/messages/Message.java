@@ -15,17 +15,17 @@ public class Message implements Serializable {
     private Status          status;
     private byte[]          voiceMsg;
     private String          picture;
-    private String          receiver;
+    private String          channel;
 
 
     public Message() {}
 
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
-    public String getReceiver() {
-        return receiver;
+    public String getChannel() {
+        return channel;
     }
 
     public byte[] getVoiceMsg() {
