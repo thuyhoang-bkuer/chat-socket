@@ -18,6 +18,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -114,6 +116,18 @@ public class LoginController implements Initializable {
 
         borderPane.setOnMouseReleased(event -> {
             borderPane.setCursor(Cursor.DEFAULT);
+        });
+
+        /* Added to prevent the enter from adding a new line to inputMessageBox */
+        borderPane.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                try {
+                    loginButtonAction();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ke.consume();
+            }
         });
 
         int numberOfSquares = 30;

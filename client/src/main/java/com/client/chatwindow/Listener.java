@@ -4,6 +4,7 @@ import com.client.login.LoginController;
 import com.messages.Message;
 import com.messages.MessageType;
 import com.messages.Status;
+import com.messages.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,10 @@ import static com.messages.MessageType.CONNECTED;
 public class Listener implements Runnable{
 
     private static final String HASCONNECTED = "has connected";
+    private static final String COMMUNITY = "#Community";
+    private static final String COMMUNITY_IMAGE = "images/alphabet/#.png";
 
+    public static User community;
     private static String picture;
     private Socket socket;
     public String hostname;
@@ -34,6 +38,7 @@ public class Listener implements Runnable{
         Listener.username = username;
         Listener.picture = picture;
         this.controller = controller;
+        Listener.community = new User(COMMUNITY, COMMUNITY_IMAGE, "ONLINE");
     }
 
     public void run() {
@@ -58,7 +63,7 @@ public class Listener implements Runnable{
                 message = (Message) input.readObject();
 
                 if (message != null) {
-                    logger.debug("Message recieved:" + message.getMsg() + " MessageType:" + message.getType() + "Name:" + message.getName());
+                    logger.debug("Message recieved:" + message.getMsg() + " MessageType:" + message.getType() + " Name:" + message.getName() + " Channel: " + message.getChannel());
                     switch (message.getType()) {
                         case USER:
                             controller.addToChat(message);

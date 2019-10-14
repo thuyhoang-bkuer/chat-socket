@@ -53,7 +53,6 @@ public class ChatController implements Initializable {
     @FXML private Label onlineCountLabel;
     @FXML private ListView userList;
     @FXML private ImageView userImageView;
-    @FXML private Label communityChannel;
     @FXML private Button recordBtn;
     @FXML ListView chatPane;
     @FXML ListView statusList;
@@ -99,10 +98,17 @@ public class ChatController implements Initializable {
         Task<HBox> othersMessages = new Task<HBox>() {
             @Override
             public HBox call() throws Exception {
-                Image image = new Image(getClass().getClassLoader().getResource("images/" + msg.getPicture().toLowerCase() + ".png").toString());
+                String channelSource = "images/alphabet/" + msg.getChannel().substring(0,1).toLowerCase() + ".png";
+                Image image = new Image(getClass().getClassLoader().getResource(msg.getPicture()).toString());
                 ImageView profileImage = new ImageView(image);
                 profileImage.setFitHeight(32);
                 profileImage.setFitWidth(32);
+
+                Image channel = new Image(getClass().getClassLoader().getResource(channelSource).toString());
+                ImageView channelImage = new ImageView(channel);
+                channelImage.setFitWidth(16);
+                channelImage.setFitHeight(16);
+
                 BubbledLabel bl6 = new BubbledLabel();
                 if (msg.getType() == MessageType.VOICE){
                     ImageView imageview = new ImageView(new Image(getClass().getClassLoader().getResource("images/sound.png").toString()));
@@ -110,14 +116,14 @@ public class ChatController implements Initializable {
                     bl6.setText("Sent a voice message!");
                     VoicePlayback.playAudio(msg.getVoiceMsg());
                 }else {
-                    bl6.setText(msg.getName() + " - " + msg.getMsg());
+                    bl6.setText(msg.getMsg());
                 }
                 bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
                 HBox x = new HBox();
                 bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
                 bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
                         null, null)));
-                x.getChildren().addAll(profileImage, bl6);
+                x.getChildren().addAll(profileImage, channelImage, bl6);
                 logger.debug("ONLINE USERS: " + Integer.toString(msg.getUserlist().size()));
                 setOnlineLabel(Integer.toString(msg.getOnlineCount()));
                 return x;
@@ -136,10 +142,11 @@ public class ChatController implements Initializable {
                 profileImage.setFitHeight(32);
                 profileImage.setFitWidth(32);
 
-                ImageView receiverImage = new ImageView(image);
-                receiverImage.setFitWidth(16);
-                receiverImage.setFitHeight(16);
-                receiverImage.setX(30);
+                String channelSource = "images/alphabet/" + msg.getChannel().substring(0,1).toLowerCase() + ".png";
+                Image channel = new Image(getClass().getClassLoader().getResource(channelSource).toString());
+                ImageView channelImage = new ImageView(channel);
+                channelImage.setFitWidth(16);
+                channelImage.setFitHeight(16);
 
                 BubbledLabel bl6 = new BubbledLabel();
                 if (msg.getType() == MessageType.VOICE){
@@ -155,7 +162,7 @@ public class ChatController implements Initializable {
                 x.setMaxWidth(chatPane.getWidth() - 20);
                 x.setAlignment(Pos.TOP_RIGHT);
                 bl6.setBubbleSpec(BubbleSpec.FACE_RIGHT_CENTER);
-                x.getChildren().addAll(bl6, receiverImage, profileImage);
+                x.getChildren().addAll(bl6, channelImage, profileImage);
 
                 setOnlineLabel(Integer.toString(msg.getOnlineCount()));
                 return x;
@@ -179,7 +186,7 @@ public class ChatController implements Initializable {
 
 
     public void setOnlineLabel(String usercount) {
-        logger.info("setOnlineLabel() - " + usercount);
+        logger.info("setOnlineLabel()");
         Platform.runLater(() -> onlineCountLabel.setText(usercount));
     }
 
@@ -188,9 +195,11 @@ public class ChatController implements Initializable {
         Platform.runLater(() -> {
             ObservableList<User> users = FXCollections.observableList(msg.getUsers());
             users.removeIf(user -> user.getName().equals(Listener.username));
+            users.add(0, Listener.community);
             userList.setItems(users);
             userList.setCellFactory(new CellRenderer());
-            setOnlineLabel(String.valueOf(msg.getUserlist().size() - 1));
+            userList.getSelectionModel().select(0);
+            setOnlineLabel(String.valueOf(msg.getUserlist().size()));
         });
         logger.info("setUserList() method Exit");
     }
@@ -272,15 +281,6 @@ public class ChatController implements Initializable {
 
         borderPane.setOnMouseReleased(event -> {
             borderPane.setCursor(Cursor.DEFAULT);
-        });
-
-        communityChannel.setOnMouseClicked(event -> {
-            try {
-                Listener.sendChannelUpadte("Community");
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
         });
 
         statusComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {

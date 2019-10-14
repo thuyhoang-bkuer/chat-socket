@@ -19,6 +19,8 @@ import java.util.Map;
 public class Server {
 
     /* Setting up variables */
+    private static final String COMMUNITY = "#Community";
+    private static final String COMMUNITY_IMAGE = "images/alphabet/#.png";
     private static final int PORT = 9001;
     private static final HashMap<String, User> names = new HashMap<>();
     private static HashMap<String, ObjectOutputStream> writers = new HashMap<>();
@@ -28,7 +30,6 @@ public class Server {
     public static void main(String[] args) throws Exception {
         logger.info("The chat server is running.");
         ServerSocket listener = new ServerSocket(PORT);
-
         try {
             while (true) {
                 new Handler(listener.accept()).start();
@@ -54,7 +55,7 @@ public class Server {
 
         public Handler(Socket socket) throws IOException {
             this.socket = socket;
-            this.channel = "Community";
+            this.channel = "#Community";
         }
 
         public void run() {
@@ -74,7 +75,7 @@ public class Server {
                 while (socket.isConnected()) {
                     Message inputmsg = (Message) input.readObject();
                     if (inputmsg != null) {
-                        logger.info(inputmsg.getType() + " - " + inputmsg.getName() + " - " + inputmsg.getChannel() + ": " + inputmsg.getMsg());
+                        logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getMsg());
                         switch (inputmsg.getType()) {
                             case USER:
                                 write(inputmsg);
@@ -184,10 +185,11 @@ public class Server {
          */
         private void write(Message msg) throws IOException {
             for (Map.Entry writer : writers.entrySet()) {
-                if (channel.equals(writer.getKey().toString()) || channel.equals("Community") || name.equals(writer.getKey().toString())) {
+                if (channel.equals(writer.getKey().toString()) || channel.equals("#Community") || name.equals(writer.getKey().toString())) {
                     msg.setUserlist(names);
                     msg.setUsers(users);
                     msg.setOnlineCount(names.size());
+                    msg.setChannel(channel);
                     writers.get(writer.getKey()).writeObject(msg);
                     writers.get(writer.getKey()).reset();
                 }
