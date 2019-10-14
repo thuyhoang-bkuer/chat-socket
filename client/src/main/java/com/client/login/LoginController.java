@@ -7,8 +7,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,7 +15,9 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -34,16 +35,16 @@ import java.util.ResourceBundle;
  *  Created by Dominic on 12-Nov-15.
  */
 public class LoginController implements Initializable {
-    @FXML private ImageView Defaultview;
+    @FXML private ImageView imageView;
     @FXML public  TextField hostnameTextfield;
     @FXML private TextField portTextfield;
     @FXML private TextField usernameTextfield;
-    @FXML private Label selectedPicture;
-    public static ChatController con;
+    public static ChatController controller;
     @FXML private BorderPane borderPane;
     private double xOffset;
     private double yOffset;
     private Scene scene;
+    private String imageSource;
 
     private static LoginController instance;
 
@@ -58,12 +59,12 @@ public class LoginController implements Initializable {
         String hostname = hostnameTextfield.getText();
         int port = Integer.parseInt(portTextfield.getText());
         String username = usernameTextfield.getText();
-        String picture = selectedPicture.getText();
+        String picture = usernameTextfield.getText().substring(0,1);
 
         FXMLLoader fmxlLoader = new FXMLLoader(getClass().getResource("/views/ChatView.fxml"));
         Parent window = (Pane) fmxlLoader.load();
-        con = fmxlLoader.<ChatController>getController();
-        Listener listener = new Listener(hostname, port, username, picture, con);
+        controller = fmxlLoader.<ChatController>getController();
+        Listener listener = new Listener(hostname, port, username, imageSource, controller);
         Thread x = new Thread(listener);
         x.start();
         this.scene = new Scene(window);
@@ -86,14 +87,18 @@ public class LoginController implements Initializable {
             stage.setMinHeight(300);
             ResizeHelper.addResizeListener(stage);
             stage.centerOnScreen();
-            con.setUsernameLabel(usernameTextfield.getText());
-            con.setImageLabel(selectedPicture.getText());
+            controller.setUsernameLabel(usernameTextfield.getText());
+            controller.setImageLabel(imageSource);
         });
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        selectedPicture.setVisible(false);
+        usernameTextfield.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals("") || !newValue.substring(0,1).matches("[a-zA-Z]")) imageSource = "images/default.png";
+            else imageSource = "images/alphabet/" + newValue.substring(0,1).toLowerCase() + ".png";
+            imageView.setImage(new Image(getClass().getClassLoader().getResource(imageSource).toString()));
+        });
         /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
             xOffset = MainLauncher.getPrimaryStage().getX() - event.getScreenX();
