@@ -35,12 +35,9 @@ import java.util.ResourceBundle;
  */
 public class LoginController implements Initializable {
     @FXML private ImageView Defaultview;
-    @FXML private ImageView Sarahview;
-    @FXML private ImageView Dominicview;
     @FXML public  TextField hostnameTextfield;
     @FXML private TextField portTextfield;
     @FXML private TextField usernameTextfield;
-    @FXML private ChoiceBox imagePicker;
     @FXML private Label selectedPicture;
     public static ChatController con;
     @FXML private BorderPane borderPane;
@@ -79,6 +76,7 @@ public class LoginController implements Initializable {
             stage.setWidth(1040);
             stage.setHeight(620);
 
+
             stage.setOnCloseRequest((WindowEvent e) -> {
                 Platform.exit();
                 System.exit(0);
@@ -95,10 +93,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        imagePicker.getSelectionModel().selectFirst();
-        selectedPicture.textProperty().bind(imagePicker.getSelectionModel().selectedItemProperty());
         selectedPicture.setVisible(false);
-
         /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
             xOffset = MainLauncher.getPrimaryStage().getX() - event.getScreenX();
@@ -116,37 +111,6 @@ public class LoginController implements Initializable {
             borderPane.setCursor(Cursor.DEFAULT);
         });
 
-        imagePicker.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> selected, String oldPicture, String newPicture) {
-                if (oldPicture != null) {
-                    switch (oldPicture) {
-                        case "Default":
-                            Defaultview.setVisible(false);
-                            break;
-                        case "Dominic":
-                            Dominicview.setVisible(false);
-                            break;
-                        case "Sarah":
-                            Sarahview.setVisible(false);
-                            break;
-                    }
-                }
-                if (newPicture != null) {
-                    switch (newPicture) {
-                        case "Default":
-                            Defaultview.setVisible(true);
-                            break;
-                        case "Dominic":
-                            Dominicview.setVisible(true);
-                            break;
-                        case "Sarah":
-                            Sarahview.setVisible(true);
-                            break;
-                    }
-                }
-            }
-        });
         int numberOfSquares = 30;
         while (numberOfSquares > 0){
             generateAnimation();
@@ -208,8 +172,8 @@ public class LoginController implements Initializable {
                 System.out.println("default");
         }
 
-        r1.setFill(Color.web("#F89406"));
-        r1.setOpacity(0.1);
+        r1.setFill(Color.web("#FDFFFC"));
+        r1.setOpacity(0.2);
 
         KeyFrame keyFrame = new KeyFrame(Duration.millis(speedOfSqaure * 1000), moveXAxis, moveYAxis);
         Timeline timeline = new Timeline();
