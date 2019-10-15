@@ -1,48 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Point3D?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="borderPane" maxHeight="620.0" maxWidth="1040.0" prefHeight="620.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.client.chatwindow.ChatController">
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pannable="true" prefHeight="496.0" vbarPolicy="ALWAYS" vmin="1.0" vvalue="1.0" VBox.vgrow="ALWAYS">
-               <content>
-                  <ListView fx:id="chatPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" />
-               </content>
-            </ScrollPane>
+            <JFXListView fx:id="chatPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mouseTransparent="true" prefHeight="504.0" prefWidth="823.0" />
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="100.0" VBox.vgrow="NEVER">
                <children>
-                  <TextArea fx:id="messageBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="100.0" nodeOrientation="LEFT_TO_RIGHT" onKeyPressed="#sendMethod" prefHeight="16.0" prefWidth="698.0" promptText="Enter Message..." scaleShape="false" HBox.hgrow="ALWAYS">
+                  <JFXTextArea fx:id="messageBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="100.0" nodeOrientation="LEFT_TO_RIGHT" onKeyPressed="#sendMethod" prefHeight="38.0" prefWidth="598.0" promptText="Enter Message..." scaleShape="false" HBox.hgrow="ALWAYS">
                      <font>
-                        <Font name="SansSerif Regular" size="14.0" />
+                        <Font name="Comic Sans MS" size="13.0" />
                      </font>
-                  </TextArea>
-                  <Button fx:id="buttonSend" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendButtonAction" prefHeight="43.0" prefWidth="140.0" scaleShape="false" text="Send" textAlignment="CENTER" HBox.hgrow="NEVER" />
-                  <Button fx:id="recordBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMousePressed="#recordVoiceMessage">
+                     <padding>
+                        <Insets left="10.0" top="10.0" />
+                     </padding>
+                  </JFXTextArea>
+                  <JFXButton fx:id="buttonSend" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendButtonAction" prefHeight="43.0" prefWidth="140.0" scaleShape="false" text="Send" textAlignment="CENTER" HBox.hgrow="NEVER">
                      <graphic>
-                        <ImageView fx:id="microphoneImageView" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="42.0" fitWidth="44.0">
                            <image>
-                              <Image url="@../images/microphone.png" />
+                              <Image url="@../images/sent.png" />
                            </image>
                         </ImageView>
-                     </graphic></Button>
+                     </graphic>
+                     <font>
+                        <Font name="Comic Sans MS" size="14.0" />
+                     </font>
+                     <textFill>
+                        <LinearGradient endX="1.0" endY="1.0">
+                           <stops>
+                              <Stop color="#e480e8" />
+                              <Stop color="#6e11e8" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill></JFXButton>
+                  <JFXButton fx:id="recordBtn" alignment="CENTER" ellipsisString="" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMousePressed="#recordVoiceMessage" prefHeight="43.0" prefWidth="43.0" text=" " wrapText="true">
+                     <graphic>
+                        <ImageView fx:id="microphoneImageView" fitHeight="24.0" fitWidth="24.0" translateX="2.0">
+                           <image>
+                              <Image url="@../images/record.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="imageBtn" alignment="CENTER" ellipsisString="" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="43.0" prefWidth="43.0" scaleShape="false" text=" " textAlignment="CENTER">
+                     <graphic>
+                        <ImageView fitHeight="28.0" fitWidth="26.0">
+                           <image>
+                              <Image url="@../images/picasa.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </JFXButton>
                </children>
             </HBox>
          </children>
@@ -51,13 +79,13 @@
    <left>
       <VBox maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
-            <ListView fx:id="userList" focusTraversable="false" maxHeight="1.7976931348623157E308" prefHeight="498.0" prefWidth="217.0" style="-fx-border-image-width: 0;" stylesheets="@../styles/ListViewStyle.css">
-            </ListView>
-            <HBox fx:id="onlineUsersHbox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="217.0" stylesheets="@../styles/ListViewStyle.css">
+            <JFXListView fx:id="userList" focusTraversable="false" maxHeight="1.7976931348623157E308" prefHeight="498.0" prefWidth="217.0" style="-fx-border-image-width: 0;" stylesheets="@../styles/ListViewStyle.css">
+            </JFXListView>
+            <HBox fx:id="onlineUsersHbox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="44.0" prefWidth="217.0" stylesheets="@../styles/ListViewStyle.css">
                <children>
-                  <Label prefHeight="50.0" prefWidth="124.0" text="Online Users:" textAlignment="CENTER" textFill="#fc6747">
+                  <Label prefHeight="50.0" prefWidth="124.0" text="Online Users:" textAlignment="CENTER">
                      <font>
-                        <Font name="SansSerif Regular" size="14.0" />
+                        <Font name="Comic Sans MS" size="13.0" />
                      </font>
                      <padding>
                         <Insets left="10.0" />
@@ -65,14 +93,30 @@
                      <opaqueInsets>
                         <Insets bottom="10.0" />
                      </opaqueInsets>
+                     <textFill>
+                        <LinearGradient endX="1.0" endY="1.0">
+                           <stops>
+                              <Stop color="#ff9bf2" />
+                              <Stop color="#a426f2" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
                   </Label>
-                  <Label fx:id="onlineCountLabel" prefHeight="48.0" prefWidth="94.0" text="0" textFill="#fc6747">
+                  <Label fx:id="onlineCountLabel" prefHeight="48.0" prefWidth="94.0" text="0">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
                      <font>
-                        <Font name="SansSerif Regular" size="14.0" />
+                        <Font name="Comic Sans MS" size="13.0" />
                      </font>
+                     <textFill>
+                        <LinearGradient endX="1.0" endY="1.0">
+                           <stops>
+                              <Stop color="#e832cf" />
+                              <Stop color="#a410e4" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
                   </Label>
                </children>
             </HBox>
@@ -81,16 +125,6 @@
    </left>
    <top>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #031c30;" BorderPane.alignment="CENTER">
-         <center>
-            <ImageView fitHeight="79.0" fitWidth="522.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-               <image>
-                  <Image url="@../images/fxchat.png" />
-               </image>
-               <BorderPane.margin>
-                  <Insets right="100.0" />
-               </BorderPane.margin>
-            </ImageView>
-         </center>
          <right>
             <HBox prefHeight="24.0" prefWidth="30.0" stylesheets="@../styles/ButtonStyle.css" BorderPane.alignment="CENTER">
                <children>
@@ -107,7 +141,7 @@
                   </ImageView>
                   <ImageView fitHeight="22.0" fitWidth="21.0" onMousePressed="#closeApplication" pickOnBounds="true" preserveRatio="true" styleClass="button">
                      <image>
-                        <Image url="@../images/close_normal.png" />
+                        <Image url="@../images/delete_sign.png" />
                      </image>
                      <HBox.margin>
                         <Insets right="30.0" top="30.0" />
@@ -130,17 +164,25 @@
                         <Insets left="10.0" top="10.0" />
                      </HBox.margin>
                   </ImageView>
-                  <VBox>
+                  <VBox prefWidth="107.0">
                      <HBox.margin>
                         <Insets left="10.0" top="30.0" />
                      </HBox.margin>
                      <children>
-                        <Label fx:id="usernameLabel" text="Dominic Heal" textFill="#fa6648">
+                        <Label fx:id="usernameLabel" text="Anomynous">
                            <font>
-                              <Font name="HelveticaNeue Medium" size="14.0" />
+                              <Font name="Comic Sans MS" size="16.0" />
                            </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="#ff9bf2" />
+                                    <Stop color="#a426f2" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
                         </Label>
-                        <ComboBox fx:id="statusComboBox" prefHeight="25.0" prefWidth="101.0" promptText="Online" stylesheets="@../styles/ComboBox.css">
+                        <JFXComboBox fx:id="statusComboBox" focusColor="#e8adff" prefHeight="25.0" prefWidth="101.0" promptText="Online" stylesheets="@../styles/ComboBox.css" unFocusColor="WHITE">
                            <items>
                               <FXCollections fx:factory="observableArrayList">
                                  <String fx:value="Online" />
@@ -148,7 +190,7 @@
                                  <String fx:value="Busy" />
                               </FXCollections>
                            </items>
-                        </ComboBox>
+                        </JFXComboBox>
                      </children>
                   </VBox>
                </children></HBox>

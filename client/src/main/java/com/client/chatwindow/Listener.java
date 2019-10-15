@@ -41,6 +41,8 @@ public class Listener implements Runnable{
         Listener.community = new User(COMMUNITY, COMMUNITY_IMAGE, "ONLINE");
     }
 
+
+
     public void run() {
         try {
             socket = new Socket(hostname, port);
@@ -69,6 +71,7 @@ public class Listener implements Runnable{
                             controller.addToChat(message);
                             break;
                         case VOICE:
+                            logger.info(message.getType() + " - " + message.getVoiceMsg().length);
                             controller.addToChat(message);
                             break;
                         case NOTIFICATION:
@@ -86,6 +89,11 @@ public class Listener implements Runnable{
                         case STATUS:
                             controller.setUserList(message);
                             break;
+                        case PICTURE:
+                            controller.addToChat(message);
+                            break;
+                        case CHANNEL:
+                            break;
                     }
                 }
             }
@@ -93,6 +101,17 @@ public class Listener implements Runnable{
             e.printStackTrace();
             controller.logoutScene();
         }
+    }
+
+    public static void sendPicture(byte[] base64Image) throws IOException{
+        Message createMessage = new Message();
+        createMessage.setName(username);
+        createMessage.setType(MessageType.PICTURE);
+        createMessage.setStatus(Status.AWAY);
+        createMessage.setPictureMsg(base64Image);
+        createMessage.setPicture(picture);
+        oos.writeObject(createMessage);
+        oos.flush();
     }
 
     /*

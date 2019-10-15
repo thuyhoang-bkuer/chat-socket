@@ -1,6 +1,7 @@
 package com.client.chatwindow;
 
 import com.client.login.MainLauncher;
+import com.client.util.ImageUtil;
 import com.client.util.VoicePlayback;
 import com.client.util.VoiceRecorder;
 import com.client.util.VoiceUtil;
@@ -18,6 +19,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,18 +39,21 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
 public class ChatController implements Initializable {
-
+    @FXML private Button imageBtn;
     @FXML private TextArea messageBox;
     @FXML private Label usernameLabel;
     @FXML private Label onlineCountLabel;
@@ -60,8 +66,8 @@ public class ChatController implements Initializable {
     @FXML ComboBox statusComboBox;
     @FXML ImageView microphoneImageView;
 
-    Image microphoneActiveImage = new Image(getClass().getClassLoader().getResource("images/microphone-active.png").toString());
-    Image microphoneInactiveImage = new Image(getClass().getClassLoader().getResource("images/microphone.png").toString());
+    Image microphoneActiveImage = new Image(getClass().getClassLoader().getResource("images/record-active.png").toString());
+    Image microphoneInactiveImage = new Image(getClass().getClassLoader().getResource("images/record.png").toString());
 
     private double xOffset;
     private double yOffset;
@@ -94,7 +100,10 @@ public class ChatController implements Initializable {
     }
 
 
+
+
     public synchronized void addToChat(Message msg) {
+        ImageUtil imageUtil = new ImageUtil();
         Task<HBox> othersMessages = new Task<HBox>() {
             @Override
             public HBox call() throws Exception {
@@ -115,7 +124,22 @@ public class ChatController implements Initializable {
                     bl6.setGraphic(imageview);
                     bl6.setText("Sent a voice message!");
                     VoicePlayback.playAudio(msg.getVoiceMsg());
-                }else {
+                } else if (msg.getType() == MessageType.PICTURE) {
+                    logger.info("" + msg.getPictureMsg().length);
+                    Platform.runLater(() -> {
+                        ImageView picture;
+                        imageUtil.imageDecode(msg.getPictureMsg());
+                        if (imageUtil.decodedImage != null)
+                            picture = new ImageView(imageUtil.decodedImage);
+                        else
+                            picture = new ImageView(microphoneActiveImage);
+                        picture.setFitWidth(imageUtil.width);
+                        picture.setFitHeight(imageUtil.height);
+                        bl6.setGraphic(picture);
+                        imageUtil.decodedImage = null;
+                    });
+                }
+                else {
                     bl6.setText(msg.getMsg());
                 }
                 bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
@@ -132,6 +156,7 @@ public class ChatController implements Initializable {
 
         othersMessages.setOnSucceeded(event -> {
             chatPane.getItems().add(othersMessages.getValue());
+            chatPane.scrollTo(chatPane.getItems().size() - 1);
         });
 
         Task<HBox> yourMessages = new Task<HBox>() {
@@ -150,10 +175,26 @@ public class ChatController implements Initializable {
 
                 BubbledLabel bl6 = new BubbledLabel();
                 if (msg.getType() == MessageType.VOICE){
-                    bl6.setGraphic(new ImageView(new Image(getClass().getClassLoader().getResource("images/sound.png").toString())));
+                    ImageView imageview = new ImageView(new Image(getClass().getClassLoader().getResource("images/sound.png").toString()));
+                    bl6.setGraphic(imageview);
                     bl6.setText("Sent a voice message!");
                     VoicePlayback.playAudio(msg.getVoiceMsg());
-                }else {
+                } else if (msg.getType() == MessageType.PICTURE) {
+                    logger.debug("" + msg.getPictureMsg().length);
+                    Platform.runLater(() -> {
+                        ImageView picture;
+                        imageUtil.imageDecode(msg.getPictureMsg());
+                        if (imageUtil.decodedImage != null)
+                            picture = new ImageView(imageUtil.decodedImage);
+                        else
+                            picture = new ImageView(microphoneActiveImage);
+                        picture.setFitWidth(imageUtil.width);
+                        picture.setFitHeight(imageUtil.height);
+                        bl6.setGraphic(picture);
+                        imageUtil.decodedImage = null;
+                    });
+                }
+                else {
                     bl6.setText(msg.getMsg());
                 }
                 bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
@@ -168,7 +209,10 @@ public class ChatController implements Initializable {
                 return x;
             }
         };
-        yourMessages.setOnSucceeded(event -> chatPane.getItems().add(yourMessages.getValue()));
+        yourMessages.setOnSucceeded(event -> {
+            chatPane.getItems().add(yourMessages.getValue());
+            chatPane.scrollTo(chatPane.getItems().size() - 1);
+        });
 
         if (msg.getName().equals(usernameLabel.getText())) {
             Thread t2 = new Thread(yourMessages);
@@ -265,7 +309,7 @@ public class ChatController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        chatPane.setFocusTraversable(false);
                 /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
             xOffset = MainLauncher.getPrimaryStage().getX() - event.getScreenX();
@@ -320,7 +364,27 @@ public class ChatController implements Initializable {
             }
         });
 
+        imageBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Platform.runLater(() -> {
+                    final FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Select an image");
+                    fileChooser.getExtensionFilters().add(new ExtensionFilter("Image Files", "*.png", "*.jpg"));
+                    fileChooser.setInitialDirectory(new File("/Users/_Zeno_/Desktop/ComputerNetwork/JavaFX-Chat/client/src/main/resources/images"));
 
+                    Stage stage = (Stage) borderPane.getScene().getWindow();
+
+                    File file = fileChooser.showOpenDialog(stage);
+
+                    if (file != null) {
+                        logger.info(file.getPath());
+                        ImageUtil.imageEncode(file.getAbsolutePath());
+                    }
+                    else logger.info("Filechooser cance");
+                });
+            }
+        });
     }
 
     public void setImageLabel(String selectedPicture) {

@@ -1,5 +1,6 @@
 .list-cell {
-    -fx-cell-size: 50 ;
+    -fx-font-family: "Comic Sans MS";
+    -fx-cell-size: 64 ;
     -fx-animated: true;
     -fx-padding: 1px;
 }
@@ -31,6 +32,11 @@
     -fx-border-width: 1px;
     -fx-padding: 0.2;
     -fx-spacing: -2;
+}
+
+
+.list-view .scroll-bar:vertical {
+    -fx-scale-x: 0;
 }
 
 

@@ -4,6 +4,8 @@ import com.client.chatwindow.Listener;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -14,12 +16,13 @@ import java.io.IOException;
  */
 public class VoiceRecorder extends VoiceUtil {
 
+
     public static void captureAudio() {
         try {
             final AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             final TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format);
+            line.open();
             line.start();
             Runnable runner = new Runnable() {
                 int bufferSize = (int)format.getSampleRate() * format.getFrameSize();
@@ -42,6 +45,7 @@ public class VoiceRecorder extends VoiceUtil {
                             line.close();
                             line.flush();
                             Listener.sendVoiceMessage(out.toByteArray());
+                            VoicePlayback.playAudio(out.toByteArray());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

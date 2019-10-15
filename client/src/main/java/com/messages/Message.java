@@ -14,11 +14,20 @@ public class Message implements Serializable {
     private ArrayList<User> users;
     private Status          status;
     private byte[]          voiceMsg;
+    private byte[]          pictureMsg;
     private String          picture;
-    private String channel;
+    private String      channel;
 
 
     public Message() {}
+
+    public byte[] getPictureMsg() {
+        return pictureMsg;
+    }
+
+    public void setPictureMsg(byte[] pictureMsg) {
+        this.pictureMsg = pictureMsg;
+    }
 
     public void setChannel(String channel) {
         this.channel = channel;

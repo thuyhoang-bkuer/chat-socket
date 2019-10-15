@@ -19,8 +19,6 @@ import java.util.Map;
 public class Server {
 
     /* Setting up variables */
-    private static final String COMMUNITY = "#Community";
-    private static final String COMMUNITY_IMAGE = "images/alphabet/#.png";
     private static final int PORT = 9001;
     private static final HashMap<String, User> names = new HashMap<>();
     private static HashMap<String, ObjectOutputStream> writers = new HashMap<>();
@@ -75,12 +73,13 @@ public class Server {
                 while (socket.isConnected()) {
                     Message inputmsg = (Message) input.readObject();
                     if (inputmsg != null) {
-                        logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getMsg());
+                        logger.info(inputmsg.getType() + " - " + name + " -> " + channel);
                         switch (inputmsg.getType()) {
                             case USER:
                                 write(inputmsg);
                                 break;
                             case VOICE:
+                                logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getVoiceMsg().length);
                                 write(inputmsg);
                                 break;
                             case CONNECTED:
@@ -91,6 +90,10 @@ public class Server {
                                 break;
                             case CHANNEL:
                                 changeChannel(inputmsg);
+                                break;
+                            case PICTURE:
+                                logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getPictureMsg().length);
+                                write(inputmsg);
                                 break;
                             default:
                                 logger.warn("Message ignored cause uncaught  UnknownType!");
