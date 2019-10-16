@@ -15,6 +15,7 @@ public class ImageUtil {
 
     public ImageUtil() {
         decodedImage = null;
+        width = height = -1;
     }
 
     public static void imageEncode(String filePath) {
@@ -26,7 +27,7 @@ public class ImageUtil {
             imageInFile.read(imageData);
             BufferedImage imageBuffer = ImageIO.read(new FileInputStream(file));
             base64Image = Base64.getEncoder().encode(imageData);
-            scale(imageBuffer.getWidth(), imageBuffer.getHeight());
+
             Listener.sendPicture(base64Image);
         } catch (FileNotFoundException e) {
             System.out.println("Image not found" + e);
@@ -49,6 +50,12 @@ public class ImageUtil {
                 byte[] imageByteArray = Base64.getDecoder().decode(base64Image);
                 ByteArrayInputStream bis = new ByteArrayInputStream(imageByteArray);
                 decodedImage = new Image(bis);
+                try {
+                    BufferedImage imageBuffer = ImageIO.read(new ByteArrayInputStream(imageByteArray));
+                    scale(imageBuffer.getWidth(), imageBuffer.getHeight());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         };
         // Converting a Base64 String into Image byte array

@@ -71,6 +71,7 @@ public class ChatController implements Initializable {
 
     private double xOffset;
     private double yOffset;
+
     Logger logger = LoggerFactory.getLogger(ChatController.class);
 
 
@@ -125,7 +126,7 @@ public class ChatController implements Initializable {
                     bl6.setText("Sent a voice message!");
                     VoicePlayback.playAudio(msg.getVoiceMsg());
                 } else if (msg.getType() == MessageType.PICTURE) {
-                    logger.info("" + msg.getPictureMsg().length);
+
                     Platform.runLater(() -> {
                         ImageView picture;
                         imageUtil.imageDecode(msg.getPictureMsg());
@@ -138,6 +139,7 @@ public class ChatController implements Initializable {
                         bl6.setGraphic(picture);
                         imageUtil.decodedImage = null;
                     });
+                    logger.debug(imageUtil.width + " - " + imageUtil.height);
                 }
                 else {
                     bl6.setText(msg.getMsg());
@@ -180,7 +182,6 @@ public class ChatController implements Initializable {
                     bl6.setText("Sent a voice message!");
                     VoicePlayback.playAudio(msg.getVoiceMsg());
                 } else if (msg.getType() == MessageType.PICTURE) {
-                    logger.debug("" + msg.getPictureMsg().length);
                     Platform.runLater(() -> {
                         ImageView picture;
                         imageUtil.imageDecode(msg.getPictureMsg());
@@ -193,6 +194,7 @@ public class ChatController implements Initializable {
                         bl6.setGraphic(picture);
                         imageUtil.decodedImage = null;
                     });
+                    logger.debug(imageUtil.width + " - " + imageUtil.height);
                 }
                 else {
                     bl6.setText(msg.getMsg());
@@ -277,7 +279,7 @@ public class ChatController implements Initializable {
     }
 
     @FXML
-    public void closeApplication() {
+    public void closeApplication() throws IOException {
         Platform.exit();
         System.exit(0);
     }
@@ -355,12 +357,13 @@ public class ChatController implements Initializable {
         userList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
             @Override
             public void changed(ObservableValue<? extends  User> observableValue, User prev, User curr) {
-                try {
-                    logger.info("Open connection to " + curr.getName());
-                    Listener.sendChannelUpadte(curr.getName());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                if (Listener.channel.equals(curr.getName()))
+                    try {
+                        logger.info("Open connection to " + curr.getName());
+                        Listener.sendChannelUpadte(curr.getName());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
         });
 

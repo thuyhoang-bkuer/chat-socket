@@ -27,6 +27,7 @@ public class Listener implements Runnable{
     public static String username;
     public ChatController controller;
     private static ObjectOutputStream oos;
+    public static String channel;
     private InputStream is;
     private ObjectInputStream input;
     private OutputStream outputStream;
@@ -39,7 +40,9 @@ public class Listener implements Runnable{
         Listener.picture = picture;
         this.controller = controller;
         Listener.community = new User(COMMUNITY, COMMUNITY_IMAGE, "ONLINE");
+        Listener.channel = "#Community";
     }
+
 
 
 
@@ -97,11 +100,15 @@ public class Listener implements Runnable{
                     }
                 }
             }
+            logger.info("Disconnected");
+            input.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             controller.logoutScene();
         }
+
     }
+
 
     public static void sendPicture(byte[] base64Image) throws IOException{
         Message createMessage = new Message();
@@ -118,11 +125,12 @@ public class Listener implements Runnable{
     *   This method is used for sending message update channel
     *   @param msg -
      */
-    public static void sendChannelUpadte(String channel) throws IOException {
+    public static void sendChannelUpadte(String updatedChannel) throws IOException {
+        channel = updatedChannel;
         Message createMessage = new Message();
         createMessage.setName(username);
         createMessage.setType(MessageType.CHANNEL);
-        createMessage.setChannel(channel);
+        createMessage.setChannel(updatedChannel);
         oos.writeObject(createMessage);
         oos.flush();
     }
