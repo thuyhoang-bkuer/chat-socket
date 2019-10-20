@@ -38,11 +38,14 @@ import java.util.ResourceBundle;
  */
 public class LoginController implements Initializable {
     @FXML private ImageView imageView;
+    @FXML private Button connectBtn;
     @FXML public  TextField hostnameTextfield;
     @FXML private TextField portTextfield;
     @FXML private TextField usernameTextfield;
     public static ChatController controller;
     @FXML private BorderPane borderPane;
+
+
     private double xOffset;
     private double yOffset;
     private Scene scene;
@@ -96,10 +99,17 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        connectBtn.setDisable(true);
         usernameTextfield.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.equals("") || !newValue.substring(0,1).matches("[a-zA-Z]")) imageSource = "images/default.png";
+
+            if (newValue.equals("")) connectBtn.setDisable(true);
+
+            if (!newValue.substring(0,1).matches("[a-zA-Z]*")) {
+                imageSource = "images/default.png";
+            }
             else imageSource = "images/alphabet/" + newValue.substring(0,1).toLowerCase() + ".png";
             imageView.setImage(new Image(getClass().getClassLoader().getResource(imageSource).toString()));
+            connectBtn.setDisable(false);
         });
         /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
@@ -122,7 +132,7 @@ public class LoginController implements Initializable {
         borderPane.addEventFilter(KeyEvent.KEY_PRESSED, ke -> {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 try {
-                    loginButtonAction();
+                    if (!connectBtn.isDisabled()) loginButtonAction();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

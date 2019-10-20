@@ -15,37 +15,21 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
-
-public class Server implements Runnable{
+public class Server {
 
     /* Setting up variables */
-    private static int PORT;
+    private static final String COMMUNITY = "#Community";
+    private static final String COMMUNITY_IMAGE = "images/alphabet/#.png";
+    private static final int PORT = 9001;
     private static final HashMap<String, User> names = new HashMap<>();
     private static HashMap<String, ObjectOutputStream> writers = new HashMap<>();
     private static ArrayList<User> users = new ArrayList<>();
     static Logger logger = LoggerFactory.getLogger(Server.class);
 
-    private static ServerSocket listener;
-
-
-    public static ServerSocket getListener() {
-        return listener;
-    }
-
     public static void main(String[] args) throws Exception {
-        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
-        String port = null;
-        do {
-            if (port !=  null) System.out.println("Please enter valid port!");
-            System.out.print("Enter PORT: ");
-            port = scanner.nextLine();
-        }
-        while (Integer.parseInt(port) < 1024 || Integer.parseInt(port) > 65365);
-        PORT = Integer.parseInt(port);
-        logger.info("The chat server is running on " + PORT);
-        listener = new ServerSocket(PORT);
+        logger.info("The chat server is running.");
+        ServerSocket listener = new ServerSocket(PORT);
         try {
             while (true) {
                 new Handler(listener.accept()).start();
@@ -54,27 +38,6 @@ public class Server implements Runnable{
             e.printStackTrace();
         } finally {
             listener.close();
-        }
-    }
-
-    public Server(String port) {
-        PORT = Integer.parseInt(port);
-    }
-
-    @Override
-    public void run() {
-        logger.info("The chat server is running on " + PORT);
-
-        try {
-            listener = new ServerSocket(PORT);
-            while (!listener.isClosed()) {
-                new Handler(listener.accept()).start();
-            }
-            listener.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            logger.info("The chat server is closed on " + PORT);
         }
     }
 
@@ -112,13 +75,12 @@ public class Server implements Runnable{
                 while (socket.isConnected()) {
                     Message inputmsg = (Message) input.readObject();
                     if (inputmsg != null) {
-                        logger.info(inputmsg.getType() + " - " + name + " -> " + channel);
+                        logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getMsg());
                         switch (inputmsg.getType()) {
                             case USER:
                                 write(inputmsg);
                                 break;
                             case VOICE:
-                                logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getVoiceMsg().length);
                                 write(inputmsg);
                                 break;
                             case CONNECTED:
@@ -129,10 +91,6 @@ public class Server implements Runnable{
                                 break;
                             case CHANNEL:
                                 changeChannel(inputmsg);
-                                break;
-                            case PICTURE:
-                                logger.info(inputmsg.getType() + " - " + name + " -> " + channel + ": " + inputmsg.getPictureMsg().length);
-                                write(inputmsg);
                                 break;
                             default:
                                 logger.warn("Message ignored cause uncaught  UnknownType!");

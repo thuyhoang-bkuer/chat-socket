@@ -13,6 +13,9 @@ import com.messages.bubble.BubbleSpec;
 import com.messages.bubble.BubbledLabel;
 import com.traynotifications.animations.AnimationType;
 import com.traynotifications.notification.TrayNotification;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -39,6 +42,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -49,12 +53,13 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 
 public class ChatController implements Initializable {
     @FXML private Button imageBtn;
-    @FXML private TextArea messageBox;
+    @FXML public TextArea messageBox;
     @FXML private Label usernameLabel;
     @FXML private Label onlineCountLabel;
     @FXML private ListView userList;
@@ -65,6 +70,9 @@ public class ChatController implements Initializable {
     @FXML BorderPane borderPane;
     @FXML ComboBox statusComboBox;
     @FXML ImageView microphoneImageView;
+    @FXML BorderPane topPane;
+    @FXML ImageView closeBtn;
+    @FXML ImageView settingBtn;
 
     Image microphoneActiveImage = new Image(getClass().getClassLoader().getResource("images/record-active.png").toString());
     Image microphoneInactiveImage = new Image(getClass().getClassLoader().getResource("images/record.png").toString());
@@ -199,8 +207,9 @@ public class ChatController implements Initializable {
                 else {
                     bl6.setText(msg.getMsg());
                 }
-                bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN,
+                bl6.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET,
                         null, null)));
+                bl6.setTextFill(Color.WHITE);
                 HBox x = new HBox();
                 x.setMaxWidth(chatPane.getWidth() - 20);
                 x.setAlignment(Pos.TOP_RIGHT);
@@ -309,8 +318,71 @@ public class ChatController implements Initializable {
         t.start();
     }
 
+    public void generateAnimation(){
+        Random rand = new Random();
+        int sizeOfSquare = rand.nextInt(50) + 1;
+        int speedOfSquare = rand.nextInt(10) + 5;
+        int startXPoint = rand.nextInt(500) + 300;
+        int startYPoint = rand.nextInt(20) + 40;
+        int direction = rand.nextInt(5) + 1;
+
+        KeyValue moveXAxis = null;
+        KeyValue moveYAxis = null;
+        Rectangle r1 = null;
+
+        switch (direction){
+            case 1 :
+                // MOVE LEFT TO RIGHT
+                r1 = new Rectangle(0,startYPoint,sizeOfSquare,sizeOfSquare);
+                moveXAxis = new KeyValue(r1.xProperty(), 1040 -  sizeOfSquare);
+                break;
+            case 2 :
+                // MOVE TOP TO BOTTOM
+                r1 = new Rectangle(startXPoint,0,sizeOfSquare,sizeOfSquare);
+                moveYAxis = new KeyValue(r1.yProperty(), 80 - sizeOfSquare);
+                break;
+            case 3 :
+                // MOVE LEFT TO RIGHT, TOP TO BOTTOM
+                r1 = new Rectangle(startXPoint,0,sizeOfSquare,sizeOfSquare);
+                moveXAxis = new KeyValue(r1.xProperty(), 1040 -  sizeOfSquare);
+                moveYAxis = new KeyValue(r1.yProperty(), 80 - sizeOfSquare);
+                break;
+            case 4 :
+                // MOVE BOTTOM TO TOP
+                r1 = new Rectangle(startXPoint,80-sizeOfSquare ,sizeOfSquare,sizeOfSquare);
+                moveYAxis = new KeyValue(r1.xProperty(), 0);
+                break;
+            case 5 :
+                // MOVE RIGHT TO LEFT
+                r1 = new Rectangle(80-sizeOfSquare,startYPoint,sizeOfSquare,sizeOfSquare);
+                moveXAxis = new KeyValue(r1.xProperty(), 0);
+                break;
+            case 6 :
+                //MOVE RIGHT TO LEFT, BOTTOM TO TOP
+                r1 = new Rectangle(startXPoint,0,sizeOfSquare,sizeOfSquare);
+                moveXAxis = new KeyValue(r1.xProperty(), 1040 -  sizeOfSquare);
+                moveYAxis = new KeyValue(r1.yProperty(), 80 - sizeOfSquare);
+                break;
+
+            default:
+                System.out.println("default");
+        }
+
+        r1.setFill(Color.web("#FDFFFC"));
+        r1.setOpacity(0.2);
+
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(speedOfSquare * 1000), moveXAxis, moveYAxis);
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+        topPane.getChildren().add(topPane.getChildren().size()-1,r1);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         chatPane.setFocusTraversable(false);
                 /* Drag and Drop */
         borderPane.setOnMousePressed(event -> {
@@ -357,7 +429,7 @@ public class ChatController implements Initializable {
         userList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
             @Override
             public void changed(ObservableValue<? extends  User> observableValue, User prev, User curr) {
-                if (Listener.channel.equals(curr.getName()))
+                if (curr != null && !Listener.channel.equals(curr.getName()))
                     try {
                         logger.info("Open connection to " + curr.getName());
                         Listener.sendChannelUpadte(curr.getName());
@@ -388,6 +460,16 @@ public class ChatController implements Initializable {
                 });
             }
         });
+
+        int numberOfSquares = 30;
+        while (numberOfSquares > 0){
+            generateAnimation();
+            numberOfSquares--;
+        }
+
+        settingBtn.translateZProperty().set(100);
+        closeBtn.translateZProperty().set(100);
+
     }
 
     public void setImageLabel(String selectedPicture) {
