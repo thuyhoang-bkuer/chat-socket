@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: com.client.login.MainLauncher
-Class-Path: javafx-swt.jar javafx.base.jar javafx.controls.jar javafx.fx
- ml.jar javafx.graphics.jar javafx.media.jar javafx.swing.jar javafx.web
- .jar jfoenix-9.0.8.jar slf4j-simple-1.6.2.jar slf4j-api-1.6.2.jar
-

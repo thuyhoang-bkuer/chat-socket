@@ -154,6 +154,7 @@ public class ChatController implements Initializable {
                 }
                 bl6.setBackground(new Background(new BackgroundFill(Color.WHITE,null, null)));
                 HBox x = new HBox();
+                x.setMaxWidth(chatPane.getWidth() - 20);
                 bl6.setBubbleSpec(BubbleSpec.FACE_LEFT_CENTER);
                 bl6.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
                         null, null)));
@@ -210,6 +211,7 @@ public class ChatController implements Initializable {
                 bl6.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET,
                         null, null)));
                 bl6.setTextFill(Color.WHITE);
+
                 HBox x = new HBox();
                 x.setMaxWidth(chatPane.getWidth() - 20);
                 x.setAlignment(Pos.TOP_RIGHT);
@@ -320,10 +322,10 @@ public class ChatController implements Initializable {
 
     public void generateAnimation(){
         Random rand = new Random();
-        int sizeOfSquare = rand.nextInt(50) + 1;
+        int sizeOfSquare = rand.nextInt(30) + 1;
         int speedOfSquare = rand.nextInt(10) + 5;
         int startXPoint = rand.nextInt(500) + 300;
-        int startYPoint = rand.nextInt(20) + 40;
+        int startYPoint = rand.nextInt(40) + 10;
         int direction = rand.nextInt(5) + 1;
 
         KeyValue moveXAxis = null;
@@ -354,7 +356,7 @@ public class ChatController implements Initializable {
                 break;
             case 5 :
                 // MOVE RIGHT TO LEFT
-                r1 = new Rectangle(80-sizeOfSquare,startYPoint,sizeOfSquare,sizeOfSquare);
+                r1 = new Rectangle(1040-sizeOfSquare,startYPoint,sizeOfSquare,sizeOfSquare);
                 moveXAxis = new KeyValue(r1.xProperty(), 0);
                 break;
             case 6 :
@@ -446,7 +448,9 @@ public class ChatController implements Initializable {
                     final FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Select an image");
                     fileChooser.getExtensionFilters().add(new ExtensionFilter("Image Files", "*.png", "*.jpg"));
-                    fileChooser.setInitialDirectory(new File("/Users/_Zeno_/Desktop/ComputerNetwork/JavaFX-Chat/client/src/main/resources/images"));
+
+                    String userDirectoryString = System.getProperty("user.home");
+                    fileChooser.setInitialDirectory(new File(userDirectoryString));
 
                     Stage stage = (Stage) borderPane.getScene().getWindow();
 
@@ -461,7 +465,7 @@ public class ChatController implements Initializable {
             }
         });
 
-        int numberOfSquares = 30;
+        int numberOfSquares = 40;
         while (numberOfSquares > 0){
             generateAnimation();
             numberOfSquares--;
